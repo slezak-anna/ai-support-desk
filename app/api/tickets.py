@@ -20,7 +20,7 @@ def create_ticket_endpoint(data: TicketCreate, db: Session = Depends(get_db)):
 
 @router.get(
     "",
-    response_model=TicketListItem)
+    response_model=list[TicketListItem])
 def list_tickets_endpoint(db: Session = Depends(get_db)):
     return list_tickets(db)
 

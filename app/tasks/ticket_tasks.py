@@ -25,16 +25,17 @@ def analyze_ticket(ticket_id: int) -> dict:
             "priority": None,
             "category": None,
             "draft_reply": None,
-            "needs_human": None
+            "needs_human": False
              }
         )
 
-        update_ticket_analysis(db, ticket.id, status="needs_human" if result.get("needs_human") else "completed", priority=result.get("priority"), category=result.get("category"), needs_human=result.get("needs_human"), draft_replay=result.get("draft_reply"))
+        update_ticket_analysis(db, ticket.id, status="needs_human" if result.get("needs_human") else "completed", priority=result.get("priority"), category=result.get("category"), needs_human=result.get("needs_human"), draft_reply=result.get("draft_reply"))
         return {
             "ticket_id": ticket.id,
             "status": "completed",
             "priority": result.get("priority"),
             "category": result.get("category"),
+            "draft_reply": result.get("draft_reply"),
             "needs_human": result.get("needs_human")
         }
     finally:

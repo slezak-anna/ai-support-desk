@@ -3,7 +3,7 @@ services:
     build: .
     container_name: ai_support_api
     ports:
-      - "8080:8000"
+      - "8000:8000"
     env_file:
       - .env
     depends_on:
@@ -23,7 +23,7 @@ services:
       - redis
     volumes:
       - .:/app
-    command: celery -A app.worker worker --loglevel=info
+    command: celery -A app.tasks.celery_app worker --loglevel=info
     
   redis:
     image: redis:latest

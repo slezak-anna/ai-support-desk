@@ -11,15 +11,19 @@ class TicketResponse(BaseModel):
     customer_email: EmailStr
     subject: str
     message: str
-    priority: str
-    category: str
+
     status: str
+    category: str | None
+    priority: str | None
+    draft_reply: str | None
+    needs_human: bool
+
     created_at: datetime
     updated_at: datetime
 
     model_config = {
-        "from_attributes": True 
-        }
+        "from_attributes": True
+    }
     
 class TicketListItem(BaseModel):
     id: int
