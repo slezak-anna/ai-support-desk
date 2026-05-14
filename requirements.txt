@@ -17,3 +17,6 @@ typing-extensions
 
 mcp
 python-dotenv
+
+langchain-ollama
+kombu

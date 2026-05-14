@@ -1,5 +1,14 @@
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph, START, END
+from langchain_ollama import ChatOllama
+from app.core.settings import get_settings
+
+def get_llm():
+    settings = get_settings()
+
+    return ChatOllama(model=settings.ollama_model,
+                      base_url=settings.ollama_base_url,
+                      temperature=0.2)
 
 class TicketState(TypedDict):
     ticket_id: int
@@ -37,7 +46,7 @@ def assign_priority(state: TicketState) -> dict:
         priority = 'low'
     return {"priority": priority}
 
-def draft_reply(state: TicketState) -> dict:
+def draft_reply_deterministic(state: TicketState) -> dict:
     category = state["category"]
 
     if category == "refund":
@@ -63,6 +72,38 @@ def draft_reply(state: TicketState) -> dict:
         )
 
     return {"draft_reply": reply}
+
+def draft_reply(state: TicketState) -> dict:
+    settings = get_settings()
+
+    if not settings.use_llm_draft:
+        return draft_reply_deterministic(state)
+    
+    llm = get_llm()
+
+    prompt = """
+            You are a support assistant for an online store.
+
+            Write a short, polite response to the customer in English.
+
+            Request details:
+            - Subject: {state["subject"]}
+            - Customer message: {state["message"]}
+            - Category: {state["category"]}
+            - Priority: {state["priority"]}
+
+            Rules:
+            - Do not promise a refund.
+            - If the matter concerns a return/complaint, state that the matter will be forwarded to a consultant.
+            - Do not make up the order status.
+            - The response should be a maximum of 5 sentences.
+            """
+    
+    response = llm.invoke(prompt)
+
+    return {
+        "draft_reply": response.content
+    }
 
 def decide_human_review(state: TicketState) -> dict:
     needs_human = state["category"] == "refund" or state["priority"] == "high"
