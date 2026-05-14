@@ -146,6 +146,151 @@ GET /tickets/{ticket_id}
 ```
 ---
 
+## Inspecting Docker Containers
+
+### Redis Container
+
+Enter Redis CLI:
+
+```bash
+docker exec -it ai_support_redis redis-cli
+```
+
+Check Celery broker database:
+
+```redis
+SELECT 0
+KEYS *
+```
+
+Check Celery result backend database:
+
+```redis
+SELECT 1
+KEYS *
+```
+
+List Celery task result keys:
+
+```redis
+SCAN 0 MATCH celery-task-meta-* COUNT 100
+```
+
+Read a specific Celery task result:
+
+```redis
+GET celery-task-meta-<task_id>
+```
+
+Check key type and TTL:
+
+```redis
+TYPE celery-task-meta-<task_id>
+TTL celery-task-meta-<task_id>
+```
+
+Exit Redis CLI:
+
+```redis
+exit
+```
+
+---
+
+### PostgreSQL Container
+
+Enter PostgreSQL CLI:
+
+```bash
+docker exec -it ai_support_db psql -U app_user -d app_db
+```
+
+List tables:
+
+```sql
+\dt
+```
+
+Inspect the `tickets` table structure:
+
+```sql
+\d tickets
+```
+
+Show all tickets:
+
+```sql
+SELECT * FROM tickets;
+```
+
+Check current Alembic migration version:
+
+```sql
+SELECT * FROM alembic_version;
+```
+
+Exit PostgreSQL CLI:
+
+```sql
+\q
+```
+
+---
+
+### API Container
+
+Enter the API container:
+
+```bash
+docker exec -it ai_support_api bash
+```
+
+Check current Alembic version:
+
+```bash
+alembic current
+```
+
+Show Alembic migration history:
+
+```bash
+alembic history
+```
+
+Run migrations:
+
+```bash
+alembic upgrade head
+```
+
+Exit the container:
+
+```bash
+exit
+```
+
+---
+
+### Celery Worker Container
+
+Enter the worker container:
+
+```bash
+docker exec -it ai_support_worker bash
+```
+
+Check if Celery can load the app:
+
+```bash
+celery -A app.tasks.celery_app inspect registered
+```
+
+Exit the container:
+
+```bash
+exit
+```
+
 ## Important files and functions
 
 ### `app/main.py`
