@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     ollama_base_url: str = Field(alias="OLLAMA_BASE_URL")
     ollama_model: str = Field(alias="OLLAMA_MODEL")
     use_llm_draft: bool = Field(default=False, alias="USE_LLM_DRAFT")
+    use_llm_triage: bool = Field(default=False, alias="USE_LLM_TRIAGE")
     
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
